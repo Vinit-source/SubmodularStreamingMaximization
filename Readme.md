@@ -1,4 +1,4 @@
-
+Forked from [sbuschjaeger/SubmodularStreamingMaximization](https://github.com/sbuschjaeger/SubmodularStreamingMaximization)
 ![Submodular Streaming Maximization](docs/pyssm-logo-bw.png "Submodular Streaming Maximization")
 
 [![Building docs](https://github.com/sbuschjaeger/SubmodularStreamingMaximization/actions/workflows/generate_docs.yml/badge.svg)](https://github.com/sbuschjaeger/SubmodularStreamingMaximization/actions/workflows/generate_docs.yml) 
