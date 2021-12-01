@@ -11,7 +11,7 @@ import numpy as np
 from numpy.linalg import slogdet
 import time
 
-from experiment_runner.experiment_runner_v2 import run_experiments
+# from experiment_runner.experiment_runner_v2 import run_experiments
 
 #from joblib import Parallel, delayed
 
@@ -97,135 +97,138 @@ data_pd.columns = meta
 data_pd = data_pd.drop("outlier", axis=1)
 data_pd = data_pd.drop("id", axis=1)
 X = data_pd.values
+print(data_pd.head())
+print(data_pd.shape)
+print(data_pd.info())
+print(X.shape)
+# # Define parameters
+# Ks = range(5,105,5)
+# eps = [1e-1, 5e-2, 1e-2, 1e-3, 5e-3]
+# Ts = [500, 1000, 2500, 5000]
+# Sigmas = np.array([0.1, 0.5, 1.0, 2.0, 5.0])*np.sqrt(X.shape[1])
 
-# Define parameters
-Ks = range(5,105,5)
-eps = [1e-1, 5e-2, 1e-2, 1e-3, 5e-3]
-Ts = [500, 1000, 2500, 5000]
-Sigmas = np.array([0.1, 0.5, 1.0, 2.0, 5.0])*np.sqrt(X.shape[1])
+# # Gather some input configuration
+# parser = argparse.ArgumentParser()
+# parser.add_argument("-s", "--single", help="Run experiments in a single thread",action="store_true", default=True)
+# parser.add_argument("-n", "--n_jobs", help="Number of jobs if --single is False",action="store_true", default=10)
 
-# Gather some input configuration
-parser = argparse.ArgumentParser()
-parser.add_argument("-s", "--single", help="Run experiments in a single thread",action="store_true", default=True)
-parser.add_argument("-n", "--n_jobs", help="Number of jobs if --single is False",action="store_true", default=10)
-
-args = parser.parse_args()
-
-
-'''
-Check if we single or multi-threaded
-basecfg = {
-    "out_path": Path where results should be stored
-    "pre": The pre-function
-    "post": The post-function
-    "fit": The fit-function
-    "backend": The running mode-, e.g. "local"/"ray"/"multiprocessing"
-    "param_1": Additional parameter 1 required by the backend, e.g. the "ray_head"
-    "param_2": Additional parameter 2 required by the backend, e.g. the "redis_password" etc
-}
-'''
-if args.single:
-    basecfg = {
-        "out_path":"results",
-        "backend":"local",
-        "num_cpus":1,
-        "pre": pre,
-        "post": post,
-        "fit": fit,
-    }
-else:
-    basecfg = {
-        "out_path":"results",
-        "backend":"local",
-        "num_cpus":args.n_jobs,
-        "pre": pre,
-        "post": post,
-        "fit": fit
-    }
+# args = parser.parse_args()
 
 
-# Configure all the runs
-runs = []
-for K in Ks:
-    for s in Sigmas:
-        runs.append(
-            ({   
-                "method": "Greedy",
-                "K":K,
-                "sigma":s,
-                "scale":1,
-                "X":X
-            })
-        )
+# '''
+# Check if we single or multi-threaded
+# basecfg = {
+#     "out_path": Path where results should be stored
+#     "pre": The pre-function
+#     "post": The post-function
+#     "fit": The fit-function
+#     "backend": The running mode-, e.g. "local"/"ray"/"multiprocessing"
+#     "param_1": Additional parameter 1 required by the backend, e.g. the "ray_head"
+#     "param_2": Additional parameter 2 required by the backend, e.g. the "redis_password" etc
+# }
+# '''
+# if args.single:
+#     basecfg = {
+#         "out_path":"results",
+#         "backend":"local",
+#         "num_cpus":1,
+#         "pre": pre,
+#         "post": post,
+#         "fit": fit,
+#     }
+# else:
+#     basecfg = {
+#         "out_path":"results",
+#         "backend":"local",
+#         "num_cpus":args.n_jobs,
+#         "pre": pre,
+#         "post": post,
+#         "fit": fit
+#     }
 
-        runs.append(
-            ({   
-                "method": "Random",
-                "K":K,
-                "sigma":s,
-                "scale":1,
-                "repetitions":5,
-                "X":X
-            })
-        )
 
-        runs.append(
-            ({   
-                "method": "IndependentSetImprovement",
-                "K":K,
-                "sigma":s,
-                "scale":1,
-                "X":X
-            })
-        )
+# # Configure all the runs
+# runs = []
+# for K in Ks:
+#     for s in Sigmas:
+#         runs.append(
+#             ({   
+#                 "method": "Greedy",
+#                 "K":K,
+#                 "sigma":s,
+#                 "scale":1,
+#                 "X":X
+#             })
+#         )
 
-        for e in eps:
-            runs.append(
-                ( {   
-                    "method": "SieveStreaming",
-                    "K":K,
-                    "sigma":s,
-                    "scale":1,
-                    "epsilon":e,
-                    "X":X
-                })
-            )
+#         runs.append(
+#             ({   
+#                 "method": "Random",
+#                 "K":K,
+#                 "sigma":s,
+#                 "scale":1,
+#                 "repetitions":5,
+#                 "X":X
+#             })
+#         )
 
-            runs.append(
-                ( {   
-                    "method": "SieveStreaming++",
-                    "K":K,
-                    "sigma":s,
-                    "scale":1,
-                    "epsilon":e,
-                    "X":X
-                })
-            )
+#         runs.append(
+#             ({   
+#                 "method": "IndependentSetImprovement",
+#                 "K":K,
+#                 "sigma":s,
+#                 "scale":1,
+#                 "X":X
+#             })
+#         )
 
-            runs.append(
-                ( {   
-                    "method": "Salsa",
-                    "K":K,
-                    "sigma":s,
-                    "scale":1,
-                    "epsilon":e,
-                    "X":X
-                })
-            )
+#         for e in eps:
+#             runs.append(
+#                 ( {   
+#                     "method": "SieveStreaming",
+#                     "K":K,
+#                     "sigma":s,
+#                     "scale":1,
+#                     "epsilon":e,
+#                     "X":X
+#                 })
+#             )
 
-            for T in Ts:    
-                runs.append(
-                    ( {   
-                        "method": "ThreeSieves",
-                        "K":K,
-                        "sigma":s,
-                        "scale":1,
-                        "epsilon":e,
-                        "T":T,
-                        "X":X
-                    })
-                )
+#             runs.append(
+#                 ( {   
+#                     "method": "SieveStreaming++",
+#                     "K":K,
+#                     "sigma":s,
+#                     "scale":1,
+#                     "epsilon":e,
+#                     "X":X
+#                 })
+#             )
 
-# Execute the runs
-random.shuffle(runs)
-run_experiments(basecfg, runs)
+#             runs.append(
+#                 ( {   
+#                     "method": "Salsa",
+#                     "K":K,
+#                     "sigma":s,
+#                     "scale":1,
+#                     "epsilon":e,
+#                     "X":X
+#                 })
+#             )
+
+#             for T in Ts:    
+#                 runs.append(
+#                     ( {   
+#                         "method": "ThreeSieves",
+#                         "K":K,
+#                         "sigma":s,
+#                         "scale":1,
+#                         "epsilon":e,
+#                         "T":T,
+#                         "X":X
+#                     })
+#                 )
+
+# # Execute the runs
+# random.shuffle(runs)
+# run_experiments(basecfg, runs)

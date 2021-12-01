@@ -13,7 +13,7 @@ This repository includes the code for our paper [Very Fast Streaming Submodular 
 
 First clone this repo recursively
 
-    git clone --recurse-submodules git@github.com:sbuschjaeger/SubmodularStreamingMaximization.git 
+    git clone --recurse-submodules git@github.com:Vinit-source/SubmodularStreamingMaximization.git 
 
 ### Using the Python Interface
 
